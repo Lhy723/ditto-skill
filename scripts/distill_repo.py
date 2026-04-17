@@ -22,7 +22,6 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     source = detect_repo_source(args.repo, Path.cwd())
-    repo_path = prepare_local_repo(source, Path(args.clones_dir), allow_clone=args.allow_clone)
     analysis_dir = Path(args.output_root) / source.slug / "analysis"
     skills_dir = Path(args.output_root) / source.slug / "skills"
 
@@ -30,6 +29,8 @@ def main() -> None:
         synthesize_skill_package(source.slug, analysis_dir, skills_dir)
         print(str(skills_dir))
         return
+
+    repo_path = prepare_local_repo(source, Path(args.clones_dir), allow_clone=args.allow_clone)
 
     if args.mode == "scan":
         run_analysis(repo_path, analysis_dir, selected_profile=args.profile, mode="scan")

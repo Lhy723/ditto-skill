@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ditto Skill"
+  short_description: "Distill repo evolution into reusable skills"
+  default_prompt: "Use -skill to analyze this repository's git history and synthesize reusable coding-agent skills."
