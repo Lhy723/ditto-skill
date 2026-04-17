@@ -3,10 +3,6 @@
 [中文 README](./README.md)
 
 <p align="center">
-  <img src="assets/logo.png" alt="Ditto Skill logo" width="160" />
-</p>
-
-<p align="center">
   <img src="assets/banner.png" alt="Ditto Skill banner" width="100%" />
 </p>
 
