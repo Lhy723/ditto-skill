@@ -1,5 +1,49 @@
 # Milestone Rubric
 
-Keep commits that introduce a durable capability, reshape architectural boundaries, add lasting quality controls, or expose a pitfall that future projects should avoid.
+在判断某个提交是否值得蒸馏成未来 skill 的输入时读取本文件。
 
-Down-rank commits that are typo-only, docs-only, formatting-only, or so local that they do not teach a reusable engineering lesson.
+## Keep Signals
+
+优先保留满足下列条件的提交：
+
+- 引入了一个持久能力，而不是一次性修补
+- 改变了目录、模块或边界组织方式
+- 引入了测试、lint、类型、CI、部署等质量机制
+- 暴露了一个未来项目应主动规避的真实坑
+- 明显体现了“先这样做，后来发现不够，再升级”的演进信号
+
+## Down-rank Signals
+
+默认降权下列提交：
+
+- typo-only
+- docs-only
+- formatting-only
+- 改动极小且没有迁移价值
+- 只改了局部实现细节，但没有新的可复用工程启发
+
+## Review Questions
+
+对每个候选提交，至少回答这 4 个问题：
+
+1. 它带来了什么持久能力或持久约束？
+2. 它改变的是“代码细节”，还是“工程路径”？
+3. 未来做类似项目时，有没有必要模仿这个变化？
+4. 如果不保留它，会不会丢掉关键演进信息？
+
+## Common Mistakes
+
+- 不要把“大 diff”自动当成“重要 diff”
+- 不要把“最终代码长这样”误当成“最值得学的提交”
+- 不要把每个 `fix` 都当 milestone
+- 也不要忽略那些揭示真实坑位的 `fix` 或 `revert`
+
+## Default Decision Rule
+
+当你拿不准时，优先保留：
+
+- `feat`
+- `refactor`
+- 能暴露架构、质量、边界变化的 `fix`
+
+当你仍然拿不准时，保留并在 `why` 里写清保留理由，不要直接静默丢弃。
