@@ -5,6 +5,7 @@ from pathlib import Path
 
 from ditto_skill.analysis import run_analysis
 from ditto_skill.repo_intake import detect_repo_source, prepare_local_repo
+from ditto_skill.synthesis import synthesize_skill_package
 
 
 def parse_args() -> argparse.Namespace:
@@ -23,6 +24,12 @@ def main() -> None:
     source = detect_repo_source(args.repo, Path.cwd())
     repo_path = prepare_local_repo(source, Path(args.clones_dir), allow_clone=args.allow_clone)
     analysis_dir = Path(args.output_root) / source.slug / "analysis"
+    skills_dir = Path(args.output_root) / source.slug / "skills"
+
+    if args.mode == "synthesize":
+        synthesize_skill_package(source.slug, analysis_dir, skills_dir)
+        print(str(skills_dir))
+        return
 
     if args.mode == "scan":
         run_analysis(repo_path, analysis_dir, selected_profile=args.profile, mode="scan")
@@ -30,6 +37,11 @@ def main() -> None:
         return
 
     run_analysis(repo_path, analysis_dir, selected_profile=args.profile, mode="analyze")
+    if args.mode == "full":
+        synthesize_skill_package(source.slug, analysis_dir, skills_dir)
+        print(str(skills_dir))
+        return
+
     print(str(analysis_dir))
 
 
