@@ -2,7 +2,12 @@ from pathlib import Path
 import json
 import subprocess
 
+from scripts.common import normalize_repo_slug
 from tests.helpers import make_git_repo
+
+
+def test_normalize_repo_slug_uses_repo_name_for_local_paths() -> None:
+    assert normalize_repo_slug("/tmp/example-repo") == "example-repo"
 
 
 def test_analyze_repo_script_writes_analysis_artifacts(tmp_path: Path) -> None:
