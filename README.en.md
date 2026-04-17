@@ -2,19 +2,13 @@
 
 [中文 README](./README.md)
 
-<!-- Logo placeholder -->
-<!--
 <p align="center">
   <img src="assets/logo.png" alt="Ditto Skill logo" width="160" />
 </p>
--->
 
-<!-- Banner placeholder -->
-<!--
 <p align="center">
   <img src="assets/banner.png" alt="Ditto Skill banner" width="100%" />
 </p>
--->
 
 <p align="center">
   <strong>Distill a software repository's git evolution into reusable skills for coding assistants.</strong><br>
