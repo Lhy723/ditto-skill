@@ -1,6 +1,6 @@
 # Ditto Skill 🧬
 
-[中文 README](./README.md)
+[中文](./README.md)
 
 <p align="center">
   <img src="assets/banner.png" alt="Ditto Skill banner" width="100%" />
@@ -76,10 +76,27 @@ Ditto Skill uses a **scripts-first** architecture. Its execution layer is design
 
 ```text
 ditto-skill/
-├── SKILL.md        # Core instructions that define how an assistant should use this skill
-├── agents/         # UI metadata for the repository
-├── scripts/        # Core execution layer (Python scripts)
-└── references/     # Manuals and decision aids the assistant can read on demand
+├── SKILL.md
+├── README.md
+├── README.en.md
+├── LICENSE
+├── agents/
+│   └── openai.yaml                       # UI-facing metadata for the skill
+├── scripts/
+│   ├── analyze_repo.py                   # Analyzes repo structure and Git history, then writes analysis artifacts
+│   ├── review_milestones.py              # Reviews milestone candidates and writes review prompts/results
+│   ├── synthesize_skill.py               # Generates the master skill and subskills from analysis outputs
+│   ├── full_distill.py                   # Runs the full distillation pipeline in one shot
+│   └── common.py                         # Shared helpers for paths, JSON I/O, and git subprocess calls
+├── references/
+│   ├── artifact-schema.md                # Structural contract for analysis artifacts and skill outputs
+│   ├── milestone-rubric.md               # Criteria for deciding which commits are true milestones
+│   ├── profile-general.md                # Distillation focus for general repositories
+│   ├── profile-web-saas.md               # Distillation focus for web SaaS repositories
+│   ├── profile-ai-agent.md               # Distillation focus for AI agent repositories
+│   └── skill-package-template.md         # Template used when generating master skill and subskills
+└── assets/
+    └── banner.png
 ```
 
 ---
