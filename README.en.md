@@ -56,8 +56,8 @@ You do not need to run complex commands manually. Just invoke it in natural lang
 
 **Default workflow:**
 1. 🔍 **Deep analysis**: the assistant analyzes the repository's Git history.
-2. 📝 **Return insights**: it reports concise conclusions and writes analysis artifacts.
-3. 🧬 **Skill synthesis**: you decide whether to turn those conclusions into reusable skill files, or explicitly ask for one-shot distillation.
+2. 📝 **Assistant drafts**: the assistant fills `reviewed-milestones.md` and `distilled-insights.md` based on the evidence packet.
+3. 🧬 **Compile and synthesize**: scripts compile those drafts into JSON, then generate reusable skill files.
 
 ---
 
@@ -66,9 +66,12 @@ You do not need to run complex commands manually. Just invoke it in natural lang
 Ditto Skill uses a **scripts-first** architecture. Its execution layer is designed for assistants to call reliably inside a skill workflow, without human manual orchestration:
 
 - `scripts/analyze_repo.py` — filters noise and extracts milestone commits from Git history
-- `scripts/review_milestones.py` — reviews architectural changes and refactor logic
-- `scripts/synthesize_skill.py` — turns insights into highly structured skill markdown
-- `scripts/full_distill.py` — runs the full distillation pipeline in one shot
+- `scripts/review_milestones.py` — generates the review packet and the `reviewed-milestones.md` draft template
+- `scripts/compile_review.py` — compiles the assistant-authored review draft into JSON
+- `scripts/prepare_insights_draft.py` — generates the `distilled-insights.md` draft template
+- `scripts/compile_insights.py` — compiles the assistant-authored insights draft into JSON
+- `scripts/synthesize_skill.py` — turns the compiled insights into highly structured skill markdown
+- `scripts/full_distill.py` — prepares the analysis and draft environment for one-shot assistant execution
 
 ---
 
@@ -84,9 +87,12 @@ ditto-skill/
 │   └── openai.yaml                       # UI-facing metadata for the skill
 ├── scripts/
 │   ├── analyze_repo.py                   # Analyzes repo structure and Git history, then writes analysis artifacts
-│   ├── review_milestones.py              # Reviews milestone candidates and writes review prompts/results
-│   ├── synthesize_skill.py               # Generates the master skill and subskills from analysis outputs
-│   ├── full_distill.py                   # Runs the full distillation pipeline in one shot
+│   ├── review_milestones.py              # Generates the review packet and reviewed-milestones.md draft
+│   ├── compile_review.py                 # Compiles reviewed-milestones.md into JSON
+│   ├── prepare_insights_draft.py         # Generates the distilled-insights.md draft
+│   ├── compile_insights.py               # Compiles distilled-insights.md into JSON
+│   ├── synthesize_skill.py               # Generates the master skill and subskills from compiled JSON
+│   ├── full_distill.py                   # Prepares analysis and draft artifacts for one-shot assistant use
 │   └── common.py                         # Shared helpers for paths, JSON I/O, and git subprocess calls
 ├── references/
 │   ├── artifact-schema.md                # Structural contract for analysis artifacts and skill outputs

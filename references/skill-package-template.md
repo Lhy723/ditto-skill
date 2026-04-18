@@ -1,45 +1,76 @@
 # Skill Package Template
 
-在准备从 analysis 产物进入 synthesis，或者需要检查生成出的 skill 是否结构完整时读取本文件。
+在填写 `distilled-insights.md`，或检查 synthesized skill 是否还是“行动手册”而不是“提交列表”时读取本文件。
 
-## Required Outputs
+## Draft Structure
 
-- `master-skill/SKILL.md`
-  必须包含：
-  - archetype
-  - default build order
-  - architecture heuristics
-  - quality rules
-  - pitfalls
+`distilled-insights.md` 必须使用固定 section：
 
-- `subskills/bootstrap/SKILL.md`
-  说明如何从最小可行骨架起步。
+- `## Project Archetype`
+- `## Build Phases`
+- `## Default Build Order`
+- `## Architecture Rules`
+- `## Stack Patterns`
+- `## Quality Rules`
+- `## Pitfall Guardrails`
+- `## Subskill Mapping`
+- `## Evidence Refs`
 
-- `subskills/architecture-evolution/SKILL.md`
-  说明何时、为何、如何拆边界。
+其中：
 
-- `subskills/quality-hardening/SKILL.md`
-  说明何时补 tests、lint、types、CI。
+- `## Build Phases`
+  每个 phase 用 `### Phase`
+- `## Default Build Order`
+  每个步骤用 `### Step`
+- `## Subskill Mapping`
+  每个 subskill 用 `### Subskill`
 
-- `subskills/stack-specific/SKILL.md`
-  保存 profile-sensitive 的栈与模式总结。
+## Required Fields
 
-- `subskills/pitfall-avoidance/SKILL.md`
-  保存历史中真实出现过的错误、修复和反模式。
+### Project Archetype
+
+- `summary`
+- `profile`
+- `manifests`
+- `top_level_dirs`
+
+### Phase
+
+- `phase`
+- `when`
+- `why`
+- `actions`
+- `evidence_refs`
+
+### Step
+
+- `phase`
+- `recommendation`
+- `why`
+
+### Subskill
+
+- `slug`
+- `when_to_use`
+- `what_to_do`
+- `what_to_avoid`
+- `signals_to_watch`
+- `evidence_refs`
 
 ## Writing Rule
 
-生成 skill 时，不要把 analysis 原文机械拷贝进去。应该把 analysis 转成：
+生成 future rules 时：
 
-- future assistant 能直接执行的指令
-- 可以迁移到相似项目的经验
-- 明确的先后顺序和判断标准
+- 主体写动作，不写提交回放
+- 先写 build order，再写 heuristics
+- commit 只允许在 `Evidence` 相关字段里出现
+- `subskill_mapping` 也必须是行动手册，不是摘要笔记
 
-## Minimum Quality Check
+## Forbidden Output Shape
 
-如果一个生成出的 skill 不满足下列任一条件，就继续改：
+如果草稿或最终 skill 出现这些问题，就继续改：
 
-1. future assistant 能从中看出先做什么后做什么
-2. future assistant 能看出哪些模式值得复用
-3. future assistant 能看出哪些坑需要主动规避
-4. 内容不是仓库读书笔记，而是行动指令
+- 主体是 commit 列表
+- 只有总结，没有动作
+- 只有动作，没有 evidence refs
+- 看完后 future assistant 仍然不知道先做什么、后做什么

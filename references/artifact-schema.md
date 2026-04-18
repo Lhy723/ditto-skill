@@ -5,40 +5,71 @@
 ## Analysis Layer
 
 - `repo-summary.json`
-  用途：提供仓库的最小画像。
-  关键字段：`root`、`profile`、`manifests`、`top_level_dirs`、`commit_count`
-  读取时回答：这是个什么仓库、当前按哪个 profile 分析、仓库规模大概如何。
+  清洗后的仓库画像。
+
+- `commit-evidence.json`
+  高信号提交的结构化证据。
 
 - `milestone-candidates.json`
-  用途：保存启发式筛出的候选里程碑提交。
-  关键字段：`sha`、`message`、`score`、`reasons`
-  读取时回答：哪些提交值得进入 review 阶段、候选是因为什么被保留。
+  进入 review 阶段的候选里程碑。
 
-- `milestone-review-prompt.md`
-  用途：给 assistant 或人工 review 使用的复判材料。
-  读取时回答：当前候选提交应该如何被判断、review 的目标是什么。
+- `milestone-review-packet.md`
+  assistant 审核时必须阅读的 packet。
+
+- `reviewed-milestones.md`
+  assistant 填写的强模板草稿。
+  每个 `## Milestone` block 必须包含：
+  - `sha`
+  - `message`
+  - `decision`
+  - `phase`
+  - `capability`
+  - `constraint_or_tradeoff`
+  - `why`
+  - `evidence_refs`
 
 - `reviewed-milestones.json`
-  用途：保存 review 结论。
-  关键字段：`sha`、`message`、`decision`、`why`
-  读取时回答：哪些提交最终被保留、为什么保留。
-  说明：正常 staged 流程里它来自 review；`full` 模式下允许自动生成 fallback。
+  由 `scripts/compile_review.py` 从 `reviewed-milestones.md` 编译得到。
 
 - `architecture-evolution.json`
-  用途：概括目录和边界变化。
-  读取时回答：这个仓库是怎样从简单结构长成当前结构的。
+  结构与边界变化总结。
 
 - `stack-evolution.json`
-  用途：概括技术栈和 profile 相关线索。
-  读取时回答：仓库依赖了什么、哪些能力与技术栈选择有关。
+  技术栈引入顺序与依赖事件总结。
 
 - `pitfall-summary.json`
-  用途：保存 fix、refactor、regression 一类的风险线索。
-  读取时回答：后续生成 skill 时应该提醒 assistant 避开什么坑。
+  fix / revert / hotfix 暴露出的 guardrails。
 
 - `distill-report.md`
-  用途：给用户看的分析摘要和下一步建议。
-  读取时回答：现在应该向用户汇报什么、是否该询问是否继续生成 skill。
+  给用户看的分析摘要。
+
+- `distilled-insights.md`
+  assistant 填写的强模板草稿。
+  必须包含这些顶级 section：
+  - `## Project Archetype`
+  - `## Build Phases`
+  - `## Default Build Order`
+  - `## Architecture Rules`
+  - `## Stack Patterns`
+  - `## Quality Rules`
+  - `## Pitfall Guardrails`
+  - `## Subskill Mapping`
+  - `## Evidence Refs`
+
+- `distilled-insights.json`
+  由 `scripts/compile_insights.py` 从 `distilled-insights.md` 编译得到。
+
+## Compile Steps
+
+- `scripts/compile_review.py`
+  输入：`reviewed-milestones.md`
+  输出：`reviewed-milestones.json`
+  规则：缺字段、非法 phase、非法 decision 都要直接报错。
+
+- `scripts/compile_insights.py`
+  输入：`distilled-insights.md`
+  输出：`distilled-insights.json`
+  规则：缺 section、非法 phase、非法 subskill slug 都要直接报错。
 
 ## Skills Layer
 
@@ -51,16 +82,18 @@ outputs/<repo-slug>/
 ```
 
 - `skills/master-skill/SKILL.md`
-  保存整体工程风格。
+  保存整体工程风格与推荐 build order。
 
 - `skills/subskills/*/SKILL.md`
-  保存可复用的局部能力。
+  保存可复用的局部能力，必须是行动手册格式。
 
 ## Assistant Rule
 
 向用户汇报时，优先引用：
 
-1. `distill-report.md` 里的简洁结论
-2. `analysis/` 目录路径
-3. 当前是否已经具备 `reviewed-milestones.json`
-4. 是否可以继续进入 synthesis
+1. `distill-report.md`
+2. `milestone-review-packet.md`
+3. `reviewed-milestones.md`
+4. `distilled-insights.md`
+
+只有当两个 Markdown 草稿都已经编译成 JSON 后，才算可以进入 synthesis。

@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import subprocess
+import sys
 
 try:
     from scripts.common import normalize_repo_slug
@@ -19,6 +20,10 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def script_path(name: str) -> str:
+    return str(Path(__file__).resolve().parent / name)
+
+
 def main() -> None:
     args = parse_args()
     repo_slug = normalize_repo_slug(args.repo)
@@ -26,8 +31,8 @@ def main() -> None:
 
     subprocess.run(
         [
-            "/Users/lhy/Project/Prompt/ditto-skill/.venv/bin/python",
-            "/Users/lhy/Project/Prompt/ditto-skill/scripts/analyze_repo.py",
+            sys.executable,
+            script_path("analyze_repo.py"),
             "--repo",
             args.repo,
             "--profile",
@@ -40,30 +45,16 @@ def main() -> None:
     )
     subprocess.run(
         [
-            "/Users/lhy/Project/Prompt/ditto-skill/.venv/bin/python",
-            "/Users/lhy/Project/Prompt/ditto-skill/scripts/review_milestones.py",
+            sys.executable,
+            script_path("review_milestones.py"),
             "--repo-slug",
             repo_slug,
             "--analysis-dir",
             str(analysis_dir),
-            "--auto-keep-top",
-            "5",
         ],
         check=True,
     )
-    subprocess.run(
-        [
-            "/Users/lhy/Project/Prompt/ditto-skill/.venv/bin/python",
-            "/Users/lhy/Project/Prompt/ditto-skill/scripts/synthesize_skill.py",
-            "--repo-slug",
-            repo_slug,
-            "--analysis-dir",
-            str(analysis_dir),
-            "--output-root",
-            args.output_root,
-        ],
-        check=True,
-    )
+    print(str(analysis_dir))
 
 
 if __name__ == "__main__":

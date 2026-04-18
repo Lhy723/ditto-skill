@@ -56,8 +56,8 @@ Ditto Skill 是专为 **Claude Code、Cursor、Codex** 等 AI 编程助手设计
 
 **默认工作流：**
 1. 🔍 **深度分析**：AI 调用脚本分析仓库 Git 历史。
-2. 📝 **输出洞察**：返回简洁的演进结论，并生成 Analysis 产物。
-3. 🧬 **技能繁衍**：由你决定是否（或直接一键）将结论固化为可复用的 Skill 文件。
+2. 📝 **审核草稿**：AI 基于 evidence packet 填写 `reviewed-milestones.md` 和 `distilled-insights.md` 草稿。
+3. 🧬 **编译与合成**：脚本把草稿编译成结构化 JSON，再生成可复用的 Skill 文件。
 
 ---
 
@@ -66,9 +66,12 @@ Ditto Skill 是专为 **Claude Code、Cursor、Codex** 等 AI 编程助手设计
 Ditto Skill 采用 **Scripts-first (脚本优先)** 架构。执行层的脚本专为 Assistant 在 Skill Workflow 中稳定调用而设计，无需人类手动干预：
 
 - `scripts/analyze_repo.py` —— 负责降噪并提取 Git 历史中的里程碑 Commit。
-- `scripts/review_milestones.py` —— 负责审视代码的架构变迁和重构逻辑。
-- `scripts/synthesize_skill.py` —— 负责将洞察转化为高度结构化的 Skill Markdown。
-- `scripts/full_distill.py` —— 一键执行完整蒸馏流水线。
+- `scripts/review_milestones.py` —— 负责生成 review packet 和 `reviewed-milestones.md` 草稿模板。
+- `scripts/compile_review.py` —— 负责把 assistant 填好的 review 草稿编译成 JSON。
+- `scripts/prepare_insights_draft.py` —— 负责生成 `distilled-insights.md` 草稿模板。
+- `scripts/compile_insights.py` —— 负责把 insights 草稿编译成 JSON。
+- `scripts/synthesize_skill.py` —— 负责将编译后的 insights 转化为高度结构化的 Skill Markdown。
+- `scripts/full_distill.py` —— 一键准备分析与草稿环境，后续提炼仍由 assistant 完成。
 
 ---
 
@@ -84,9 +87,12 @@ ditto-skill/
 │   └── openai.yaml                       # Skill 在 UI 中显示用的元数据
 ├── scripts/
 │   ├── analyze_repo.py                   # 分析仓库结构与 Git 历史，产出 analysis artifacts
-│   ├── review_milestones.py              # 审核候选里程碑提交，生成 review prompt 与 review 结果
-│   ├── synthesize_skill.py               # 基于分析结果生成 master skill 和 subskills
-│   ├── full_distill.py                   # 一键跑完整蒸馏流程
+│   ├── review_milestones.py              # 生成 review packet 和 reviewed-milestones.md 草稿
+│   ├── compile_review.py                 # 将 reviewed-milestones.md 编译成 JSON
+│   ├── prepare_insights_draft.py         # 生成 distilled-insights.md 草稿
+│   ├── compile_insights.py               # 将 distilled-insights.md 编译成 JSON
+│   ├── synthesize_skill.py               # 基于编译后的 JSON 生成 master skill 和 subskills
+│   ├── full_distill.py                   # 一键准备分析与草稿环境
 │   └── common.py                         # 脚本共享的工具函数，如路径、JSON、git 调用封装
 ├── references/
 │   ├── artifact-schema.md                # analysis 产物和 skill 产物的结构约定

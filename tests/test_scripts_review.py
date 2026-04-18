@@ -1,9 +1,10 @@
 from pathlib import Path
 import json
 import subprocess
+import sys
 
 
-def test_review_milestones_script_writes_prompt_and_review_file(tmp_path: Path) -> None:
+def test_review_milestones_script_writes_packet_and_draft_template(tmp_path: Path) -> None:
     analysis_dir = tmp_path / "outputs" / "sample-repo" / "analysis"
     analysis_dir.mkdir(parents=True)
     (analysis_dir / "milestone-candidates.json").write_text(
@@ -11,9 +12,14 @@ def test_review_milestones_script_writes_prompt_and_review_file(tmp_path: Path) 
             [
                 {
                     "sha": "a1",
-                    "message": "feat: add auth",
-                    "score": 6,
-                    "reasons": ["feature", "web-saas auth"],
+                    "message": "feat: add auth flow",
+                    "authored_at": "2026-01-01T00:00:00+00:00",
+                    "score": 9,
+                    "reasons": ["durable capability", "dependency change", "profile signal"],
+                    "phase_hint": "expansion",
+                    "files": ["app/login/page.tsx", "lib/auth.ts", "middleware.ts"],
+                    "evidence_summary": "feat: add auth flow — introduces auth; changes dependencies in package.json.",
+                    "evidence_refs": ["commit-evidence.json#a1"],
                 }
             ],
             indent=2,
@@ -22,20 +28,24 @@ def test_review_milestones_script_writes_prompt_and_review_file(tmp_path: Path) 
 
     subprocess.run(
         [
-            "/Users/lhy/Project/Prompt/ditto-skill/.venv/bin/python",
+            sys.executable,
             "/Users/lhy/Project/Prompt/ditto-skill/scripts/review_milestones.py",
             "--repo-slug",
             "sample-repo",
             "--analysis-dir",
             str(analysis_dir),
-            "--auto-keep-top",
-            "1",
         ],
         check=True,
         capture_output=True,
         text=True,
     )
 
-    reviewed = json.loads((analysis_dir / "reviewed-milestones.json").read_text())
-    assert reviewed[0]["decision"] == "keep"
-    assert (analysis_dir / "milestone-review-prompt.md").exists()
+    packet = (analysis_dir / "milestone-review-packet.md").read_text()
+    draft = (analysis_dir / "reviewed-milestones.md").read_text()
+
+    assert "Questions to answer" in packet
+    assert "evidence refs" in packet
+    assert "## Milestone" in draft
+    assert "- decision: keep" in draft
+    assert "- capability: TODO" in draft
+    assert not (analysis_dir / "reviewed-milestones.json").exists()
